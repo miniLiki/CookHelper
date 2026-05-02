@@ -2,16 +2,14 @@
 
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageCircle, Search, TrendingUp, Heart, ChefHat, Sparkles, X } from 'lucide-react'
-import { Button, Card, CardContent } from '@/components/ui'
+import { MessageCircle, Search, Heart, X } from 'lucide-react'
+import { Button, Card, AppLogo } from '@/components/ui'
 import { RecipeCard } from '@/components/recipe'
 import { useAppStore } from '@/store'
 import { useRecipes } from '@/hooks'
 import { Recipe } from '@/types'
-import { useRouter } from 'next/navigation'
 
 const HomePage: React.FC = () => {
-  const router = useRouter()
   const { createChatSession, ui, setSidebarOpen } = useAppStore()
   const { getRecommendations } = useRecipes()
   
@@ -63,7 +61,7 @@ const HomePage: React.FC = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen">
       {/* 侧边栏 */}
       <AnimatePresence>
         {ui.sidebarOpen && (
@@ -140,10 +138,8 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <ChefHat className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-xl font-bold gradient-text">今天吃什么</h1>
+              <AppLogo className="w-9 h-9 rounded-lg" alt="山治君 Logo" />
+              <h1 className="text-xl font-bold gradient-text">山治君</h1>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -176,32 +172,34 @@ const HomePage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
-          <div className="max-w-3xl mx-auto">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6"
-            >
-              <Sparkles className="w-10 h-10 text-white" />
-            </motion.div>
-            
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-4xl md:text-6xl font-bold gradient-text mb-6"
-            >
-              今天吃什么？
-            </motion.h1>
+          <div className="max-w-3xl mx-auto bg-transparent rounded-3xl p-8 md:p-10">
+            <div className="mb-6 flex items-center justify-center gap-4 md:gap-6">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                className="flex-shrink-0"
+              >
+                <AppLogo className="w-16 h-16 md:w-20 md:h-20 rounded-full shadow-lg" alt="欢迎区 Logo" />
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-4xl md:text-6xl font-bold gradient-text mb-0"
+              >
+                需要我帮忙吗？
+              </motion.h1>
+            </div>
             
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-xl text-gray-600 mb-8"
+              className="text-xl text-gray-700 mb-8"
             >
-              AI美食助手为您推荐个性化菜谱，提供详细烹饪指导
+              山治君为您推荐个性化菜谱，提供详细烹饪指导
             </motion.p>
             
             <motion.div
@@ -229,9 +227,6 @@ const HomePage: React.FC = () => {
           transition={{ delay: 0.6 }}
           className="mb-16"
         >
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
-            💡 快速开始
-          </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {quickQuestions.map((question, index) => (
@@ -248,7 +243,9 @@ const HomePage: React.FC = () => {
                     const sessionId = createChatSession(question)
                     window.location.href = `/chat?session=${sessionId}&q=${encodeURIComponent(question)}`
                   }}
-                  className="cursor-pointer h-full flex items-center justify-center"
+                  className={`cursor-pointer h-full flex items-center justify-center ${
+                    index % 3 === 0 ? 'surface-warm' : index % 3 === 1 ? 'surface-cool' : 'surface-fresh'
+                  }`}
                 >
                   <div className="p-4 w-full text-center">
                     <p className="text-gray-700 leading-relaxed">{question}</p>
@@ -267,7 +264,7 @@ const HomePage: React.FC = () => {
             transition={{ delay: 0.8 }}
             className="mb-16"
           >
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-6 surface-fresh rounded-2xl px-4 py-3">
               <h2 className="text-2xl font-semibold text-gray-900 flex items-center">
                 <Heart className="w-6 h-6 text-red-500 mr-2" />
                 为您推荐
@@ -320,11 +317,11 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <ChefHat className="w-5 h-5 text-blue-500" />
-              <span className="text-lg font-semibold gradient-text">今天吃什么</span>
+              <AppLogo className="w-7 h-7 rounded-md" alt="山治君 Footer Logo" />
+              <span className="text-lg font-semibold gradient-text">山治君</span>
             </div>
             <p className="text-gray-600 text-sm">
-              基于图RAG技术的智能烹饪助手 · 让美食更简单
+              欢迎来到山治的厨房
             </p>
           </div>
         </div>

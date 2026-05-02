@@ -3,16 +3,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChefHat, Plus, Sidebar, X, MessageSquare, Trash2 } from 'lucide-react'
-import { Button, LoadingSpinner } from '@/components/ui'
+import { Plus, Sidebar, X, MessageSquare, Trash2 } from 'lucide-react'
+import { Button, AppLogo } from '@/components/ui'
 import { ChatMessage, ChatInput } from '@/components/chat'
 import { useAppStore } from '@/store'
 import { useChat } from '@/hooks'
 
 const ChatPage: React.FC = () => {
   const searchParams = useSearchParams()
-  const sessionId = searchParams.get('session')
-  const initialQuestion = searchParams.get('q')
+  const sessionId = searchParams?.get('session') ?? null
+  const initialQuestion = searchParams?.get('q') ?? null
   
   const {
     chat,
@@ -95,7 +95,7 @@ const ChatPage: React.FC = () => {
   }
   
   return (
-    <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="h-screen">
       {/* 侧边栏 */}
       <AnimatePresence>
         {ui.sidebarOpen && (
@@ -122,11 +122,11 @@ const ChatPage: React.FC = () => {
               className="fixed left-0 top-0 h-full w-80 glass border-r border-white/20 z-50 flex flex-col"
             >
               {/* 侧边栏头部 - 集成导航功能 */}
-              <div className="p-4 border-b border-white/10">
+              <div className="p-4 border-b border-white/10 surface-warm">
                 {/* 主标题和返回首页 */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
-                    <ChefHat className="w-6 h-6 text-blue-500" />
+                    <AppLogo className="w-8 h-8 rounded-lg" alt="今天吃什么 Logo" />
                     <h1 className="text-lg font-semibold gradient-text">今天吃什么</h1>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -173,7 +173,7 @@ const ChatPage: React.FC = () => {
                       key={session.id}
                       className={`group relative p-3 rounded-lg cursor-pointer transition-all duration-200 ${
                         currentSession?.id === session.id
-                          ? 'bg-blue-100/50 border border-blue-200'
+                          ? 'surface-cool'
                           : 'hover:bg-white/20'
                       }`}
                       onClick={() => {
@@ -264,9 +264,7 @@ const ChatPage: React.FC = () => {
           ) : (
             <div className="flex-1 flex items-center justify-center px-4">
               <div className="text-center max-w-md mx-auto">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ChefHat className="w-8 h-8 text-white" />
-                </div>
+                <AppLogo className="w-16 h-16 rounded-full mx-auto mb-4 shadow-lg" alt="对话页 Logo" />
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">
                   开始新的对话
                 </h2>
@@ -285,7 +283,7 @@ const ChatPage: React.FC = () => {
                       variant="glass"
                       size="sm"
                       onClick={() => sendMessage(suggestion)}
-                      className="w-full"
+                      className={`w-full ${index % 2 === 0 ? 'surface-cool' : 'surface-fresh'}`}
                     >
                       {suggestion}
                     </Button>
@@ -297,7 +295,7 @@ const ChatPage: React.FC = () => {
         </div>
         
         {/* 输入区域 */}
-        <div className="border-t border-white/10 p-4">
+        <div className="border-t border-white/10 p-4 bg-white/35 backdrop-blur">
           <ChatInput
             onSendMessage={sendMessage}
             disabled={isLoading || isStreaming}

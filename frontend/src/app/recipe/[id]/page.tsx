@@ -16,7 +16,8 @@ import { Recipe } from '@/types'
 const RecipeDetailPage: React.FC = () => {
   const params = useParams()
   const router = useRouter()
-  const recipeId = params.id as string
+  const rawRecipeId = params?.id
+  const recipeId = Array.isArray(rawRecipeId) ? rawRecipeId[0] : (rawRecipeId ?? '')
   
   const {
     cooking,

@@ -21,9 +21,9 @@ const Card: React.FC<CardProps> = ({
   const baseClasses = 'rounded-2xl transition-all duration-300'
   
   const variantClasses = {
-    default: 'bg-white shadow-md border border-gray-200',
+    default: 'bg-gradient-to-br from-white to-blue-50/70 shadow-md border border-blue-100/60',
     glass: 'glass',
-    elevated: 'bg-white shadow-xl border border-gray-100'
+    elevated: 'bg-gradient-to-br from-white to-orange-50/70 shadow-xl border border-orange-100/60'
   }
   
   const hoverClasses = hover ? 'hover:shadow-xl hover:-translate-y-1 cursor-pointer' : ''
