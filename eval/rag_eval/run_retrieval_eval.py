@@ -6,6 +6,7 @@ import argparse
 import csv
 import json
 import logging
+import re
 from pathlib import Path
 from typing import Dict, Iterable, List, Sequence
 
@@ -102,6 +103,37 @@ def build_doc_summaries(docs: Sequence, limit: int = 5) -> List[dict]:
     return summaries
 
 
+def _simple_keyword_extract(query: str) -> tuple[List[str], List[str]]:
+    """Fast heuristic keyword extractor used in eval fast mode."""
+    tokens = [tok.strip() for tok in re.split(r"[\\s,，。？?！!、]+", query) if tok.strip()]
+    if not tokens:
+        return [query], []
+    return tokens[:3], tokens[3:6]
+
+
+def enable_fast_eval_mode(rag_system) -> None:
+    """Disable LLM parsing in retrieval modules to speed up large-scale eval."""
+    try:
+        from rag_modules.graph_rag_retrieval import GraphQuery, QueryType
+    except Exception:
+        return
+
+    rag_system.traditional_retrieval.extract_query_keywords = _simple_keyword_extract
+
+    def _fast_understand(query: str):
+        return GraphQuery(
+            query_type=QueryType.SUBGRAPH,
+            source_entities=[query],
+            target_entities=[],
+            relation_types=[],
+            max_depth=2,
+            max_nodes=50,
+            constraints={},
+        )
+
+    rag_system.graph_rag_retrieval.understand_graph_query = _fast_understand
+
+
 def evaluate_run(
     example: dict,
     strategy: str,
@@ -181,6 +213,9 @@ def run_evaluation(args):
     rag_system = AdvancedGraphRAGSystem()
     rag_system.initialize_system()
     rag_system.build_knowledge_base()
+    if args.fast_no_llm_parse:
+        enable_fast_eval_mode(rag_system)
+        logger.info("已启用 fast-no-llm-parse 模式（评测加速）")
 
     strategies = [item.strip() for item in args.strategies.split(",") if item.strip()]
     invalid = [s for s in strategies if s not in SUPPORTED_STRATEGIES]
@@ -217,6 +252,7 @@ def run_evaluation(args):
                     "query": example["query"],
                     "strategy": strategy,
                     "top_k": args.top_k,
+                    "fast_no_llm_parse": bool(args.fast_no_llm_parse),
                     "recommended_strategy": analysis.recommended_strategy.value,
                     "pred_recipe_ids": pred_recipe_ids,
                     "pred_chunk_ids": pred_chunk_ids,
@@ -245,5 +281,10 @@ if __name__ == "__main__":
     parser.add_argument("--strategies", type=str, default="hybrid_traditional,graph_rag,combined")
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--ks", type=str, default="1,3,5")
+    parser.add_argument(
+        "--fast-no-llm-parse",
+        action="store_true",
+        help="Disable LLM parsing calls in retrieval modules for faster large-scale evaluation.",
+    )
 
     run_evaluation(parser.parse_args())

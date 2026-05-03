@@ -1,0 +1,4 @@
+strategy,question_type,count,support_labeled_count,chunk_precision@1,chunk_recall@1,chunk_f1@1,chunk_precision@3,chunk_recall@3,chunk_f1@3,chunk_precision@5,chunk_recall@5,chunk_f1@5,grounded_chunk_precision@1,grounded_chunk_recall@1,grounded_chunk_f1@1,grounded_chunk_precision@3,grounded_chunk_recall@3,grounded_chunk_f1@3,grounded_chunk_precision@5,grounded_chunk_recall@5,grounded_chunk_f1@5
+combined,closed,60,0,,,,,,,,,,,,,,,,,,
+graph_rag,closed,60,0,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,,,,,,,,,
+hybrid_traditional,closed,60,0,,,,,,,,,,,,,,,,,,

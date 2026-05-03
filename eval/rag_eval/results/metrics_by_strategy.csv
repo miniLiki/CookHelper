@@ -1,0 +1,7 @@
+strategy,question_type,count,recipe_precision@1,recipe_recall@1,recipe_f1@1,recipe_precision@3,recipe_recall@3,recipe_f1@3,recipe_precision@5,recipe_recall@5,recipe_f1@5,hit_preferred@1,hit_acceptable@1,ndcg@1,preferred_precision@1,preferred_recall@1,preferred_f1@1,hit_preferred@3,hit_acceptable@3,ndcg@3,preferred_precision@3,preferred_recall@3,preferred_f1@3,hit_preferred@5,hit_acceptable@5,ndcg@5,preferred_precision@5,preferred_recall@5,preferred_f1@5
+combined,closed,60,0.966667,0.966667,0.966667,0.333333,1.000000,0.500000,0.200000,1.000000,0.333333,,,,,,,,,,,,,,,,,,
+combined,open,60,,,,,,,,,,0.150000,0.216667,0.258333,0.150000,0.053929,0.072540,0.216667,0.416667,0.205817,0.088889,0.077698,0.075450,0.216667,0.416667,0.158113,0.053333,0.077698,0.057941
+graph_rag,closed,60,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,,,,,,,,,,,,,,,,,,
+graph_rag,open,60,,,,,,,,,,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+hybrid_traditional,closed,60,0.966667,0.966667,0.966667,0.333333,1.000000,0.500000,0.200000,1.000000,0.333333,,,,,,,,,,,,,,,,,,
+hybrid_traditional,open,60,,,,,,,,,,0.150000,0.216667,0.258333,0.150000,0.053929,0.072540,0.316667,0.500000,0.267375,0.138889,0.125079,0.118585,0.433333,0.633333,0.276140,0.136667,0.190675,0.144125
