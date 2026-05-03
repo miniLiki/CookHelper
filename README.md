@@ -73,7 +73,7 @@ cd cookhelper
 chmod +x start.sh stop.sh
 ./start.sh
 ```
-**访问**
+**访问:**
 启动完成后，脚本会自动打开浏览器，或手动访问：
 
 - **🏠 应用首页**: http://localhost
@@ -81,7 +81,9 @@ chmod +x start.sh stop.sh
 - **🐍 后端API**: http://localhost:8000
 - **📊 Neo4j**: http://localhost:7474 (neo4j/all-in-rag)
 - **🗄️ Milvus/MinIO 控制台**: http://localhost:9001 (minioadmin/minioadmin)
-**停止**
+
+**停止:**
+
 ```bash
 # 停止所有服务
 stop.bat        # Windows
