@@ -14,6 +14,7 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 WHITE='\033[1;37m'
 NC='\033[0m' # No Color
+COMPOSE_CMD="docker-compose"
 
 # 打印带颜色的消息
 print_message() {
@@ -59,6 +60,32 @@ check_command() {
     return 0
 }
 
+# 检测可用的 Docker Compose 命令
+detect_compose_command() {
+    if command -v docker-compose &> /dev/null; then
+        COMPOSE_CMD="docker-compose"
+        return 0
+    fi
+
+    if docker compose version &> /dev/null; then
+        COMPOSE_CMD="docker compose"
+        return 0
+    fi
+
+    print_error "Docker Compose未安装"
+    print_info "请安装 Docker Compose，或升级 Docker 以启用 compose 插件"
+    return 1
+}
+
+# 统一执行 compose 命令
+run_compose() {
+    if [ "$COMPOSE_CMD" = "docker compose" ]; then
+        docker compose "$@"
+    else
+        docker-compose "$@"
+    fi
+}
+
 # 检查Docker环境
 check_docker() {
     print_step "检查Docker环境..."
@@ -73,16 +100,27 @@ check_docker() {
         exit 1
     fi
     
-    if ! docker info &> /dev/null; then
-        print_error "Docker未运行，请启动Docker服务"
+    local docker_info_output
+    docker_info_output=$(docker info 2>&1) || true
+    if [[ "$docker_info_output" == *"permission denied while trying to connect to the docker API"* ]]; then
+        print_error "当前用户无权限访问Docker（docker.sock权限不足）"
+        print_info "可执行以下命令修复后重新登录终端："
+        print_info "  sudo usermod -aG docker \$USER"
+        print_info "  newgrp docker"
         exit 1
     fi
-    
-    if ! check_command docker-compose; then
-        print_error "Docker Compose未安装"
+
+    if [[ "$docker_info_output" == *"Cannot connect to the Docker daemon"* ]] || [[ "$docker_info_output" == *"Is the docker daemon running"* ]] || [ -z "$docker_info_output" ]; then
+        if ! docker info &> /dev/null; then
+            print_error "Docker未运行，请启动Docker服务"
+            exit 1
+        fi
+    fi
+
+    if ! detect_compose_command; then
         exit 1
     fi
-    
+
     print_success "Docker环境检查通过"
 }
 
@@ -144,15 +182,15 @@ start_services() {
     
     # 拉取镜像
     print_info "拉取Docker镜像..."
-    docker-compose pull
+    run_compose pull
     
     # 构建自定义镜像
     print_info "构建应用镜像..."
-    docker-compose build
+    run_compose build
     
     # 启动服务
     print_info "启动服务容器..."
-    docker-compose up -d
+    run_compose up -d
     
     print_success "服务启动命令执行完成"
 }
@@ -180,7 +218,7 @@ wait_for_services() {
 
     if [ $retry_count -eq $max_retries ]; then
         print_error "后端服务启动超时"
-        print_info "查看日志: docker-compose logs backend"
+        print_info "查看日志: ${COMPOSE_CMD} logs backend"
         print_info "常见问题："
         print_info "  - 检查端口8000是否被占用"
         print_info "  - 检查Docker内存是否充足"
@@ -205,7 +243,7 @@ wait_for_services() {
 
     if [ $retry_count -eq $max_retries ]; then
         print_error "Nginx代理服务启动超时"
-        print_info "查看日志: docker-compose logs nginx"
+        print_info "查看日志: ${COMPOSE_CMD} logs nginx"
         print_info "尝试直接访问前端: http://localhost:3000"
         # 不退出，因为可以直接访问前端
     fi
@@ -233,17 +271,17 @@ show_services() {
     echo
     
     print_message $YELLOW "📝 管理命令："
-    echo "   查看服务状态: docker-compose ps"
-    echo "   查看日志:     docker-compose logs -f [service_name]"
-    echo "   重启服务:     docker-compose restart [service_name]"
-    echo "   停止服务:     docker-compose down"
-    echo "   完全清理:     docker-compose down -v"
+    echo "   查看服务状态: ${COMPOSE_CMD} ps"
+    echo "   查看日志:     ${COMPOSE_CMD} logs -f [service_name]"
+    echo "   重启服务:     ${COMPOSE_CMD} restart [service_name]"
+    echo "   停止服务:     ${COMPOSE_CMD} down"
+    echo "   完全清理:     ${COMPOSE_CMD} down -v"
     echo
     
     print_message $PURPLE "💡 开发提示："
-    echo "   - 代码修改后需要重新构建: docker-compose build [service_name]"
-    echo "   - 查看实时日志: docker-compose logs -f"
-    echo "   - 进入容器调试: docker-compose exec [service_name] bash"
+    echo "   - 代码修改后需要重新构建: ${COMPOSE_CMD} build [service_name]"
+    echo "   - 查看实时日志: ${COMPOSE_CMD} logs -f"
+    echo "   - 进入容器调试: ${COMPOSE_CMD} exec [service_name] bash"
     echo
 }
 
@@ -275,7 +313,7 @@ main() {
 }
 
 # 信号处理
-trap 'echo; print_info "正在停止服务..."; docker-compose down; exit 0' INT TERM
+trap 'echo; print_info "正在停止服务..."; run_compose down; exit 0' INT TERM
 
 # 执行主函数
 main "$@"

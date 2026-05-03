@@ -1,6 +1,8 @@
 # 项目名称
 
 CookHelper (cooker) - AI 美食推荐助手
+![界面](./view1.png)
+![聊天界面](./view2.png)
 
 ## 📝 项目简介
 

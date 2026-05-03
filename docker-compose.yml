@@ -5,7 +5,6 @@ services:
   # Neo4j 图数据库
   neo4j:
     image: neo4j:5.11-community
-    container_name: what-to-eat-neo4j
     environment:
       - NEO4J_AUTH=neo4j/all-in-rag
       - NEO4J_PLUGINS=["apoc", "graph-data-science"]
@@ -33,7 +32,6 @@ services:
   # Milvus 向量数据库依赖服务
   milvus-etcd:
     image: quay.io/coreos/etcd:v3.5.5
-    container_name: what-to-eat-milvus-etcd
     environment:
       - ETCD_AUTO_COMPACTION_MODE=revision
       - ETCD_AUTO_COMPACTION_RETENTION=1000
@@ -51,7 +49,6 @@ services:
 
   milvus-minio:
     image: minio/minio:RELEASE.2023-03-20T20-16-18Z
-    container_name: what-to-eat-milvus-minio
     environment:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
@@ -71,7 +68,6 @@ services:
   # Milvus 向量数据库
   milvus-standalone:
     image: milvusdb/milvus:v2.3.2
-    container_name: what-to-eat-milvus-standalone
     command: ["milvus", "run", "standalone"]
     environment:
       ETCD_ENDPOINTS: milvus-etcd:2379
@@ -97,7 +93,6 @@ services:
   # Neo4j 数据自动导入服务
   neo4j-init:
     image: neo4j:5.11-community
-    container_name: what-to-eat-neo4j-init
     environment:
       - NEO4J_AUTH=neo4j/all-in-rag
     volumes:
@@ -124,7 +119,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: what-to-eat-backend
     environment:
       - PYTHONPATH=/app
       - DOCKER_ENV=true
@@ -166,7 +160,6 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       target: runner
-    container_name: what-to-eat-frontend
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://localhost:8000
@@ -188,7 +181,6 @@ services:
   # Nginx 反向代理
   nginx:
     image: nginx:alpine
-    container_name: what-to-eat-nginx
     ports:
       - "80:80"
     volumes:
@@ -212,7 +204,3 @@ volumes:
   etcd_data:
   minio_data:
   milvus_data:
-
-networks:
-  default:
-    name: what-to-eat-network
