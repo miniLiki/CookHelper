@@ -1,6 +1,6 @@
 # 项目名称
 
-CookHelper (cooker) - AI 美食推荐助手
+CookHelper (山治君) - AI 美食推荐助手
 ![界面](./view1.png)
 ![聊天界面](./view2.png)
 
@@ -24,7 +24,6 @@ CookHelper (cooker) - AI 美食推荐助手
 - [x] 对话问答：支持自然语言提问与连续会话
 - [x] 菜谱详情页：展示食材、步骤、时长、标签等信息
 - [x] 一键部署：`start.sh` / `start.bat` 启动完整服务
-- [x] 前端可定制：支持自定义 Logo 和背景图
 
 ## 🛠️ 技术栈
 
@@ -75,11 +74,6 @@ chmod +x start.sh stop.sh
 ./start.sh
 ```
 
-如果你本地目录为 `/home/ly/cookhelper`，可直接在该目录执行：
-```bash
-cd /home/ly/cookhelper
-./start.sh
-```
 
 ### 🌐 访问应用
 
@@ -149,16 +143,11 @@ npm run dev
 
 - 图检索 + 向量检索组合，兼顾语义匹配和结构关系
 - 提供容器化一键启动，降低本地部署门槛
-- UI 支持快速个性化：
-  - Logo：`frontend/public/logo.png`
-  - 背景：`frontend/public/beijing.jpg`
+
 
 ## 📊 性能评估
 
-当前仓库未提供统一 benchmark 脚本，建议按以下维度自行评估：
-- 首次容器启动时长
-- 推荐响应时间（后端 API）
-- 多轮对话稳定性
+
 
 ## 🔮 未来计划
 

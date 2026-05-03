@@ -60,6 +60,23 @@ class IntelligentQueryRouter:
             "combined_count": 0,
             "total_queries": 0
         }
+
+    @staticmethod
+    def _parse_forced_strategy(force_strategy: Optional[Any]) -> Optional[SearchStrategy]:
+        """解析外部传入的强制策略参数"""
+        if force_strategy is None:
+            return None
+        if isinstance(force_strategy, SearchStrategy):
+            return force_strategy
+        if isinstance(force_strategy, str):
+            normalized = force_strategy.strip().lower()
+            for strategy in SearchStrategy:
+                if strategy.value == normalized:
+                    return strategy
+        raise ValueError(
+            "force_strategy 必须是以下之一: "
+            + ", ".join([s.value for s in SearchStrategy])
+        )
         
     def analyze_query(self, query: str) -> QueryAnalysis:
         """
@@ -163,14 +180,27 @@ class IntelligentQueryRouter:
             reasoning="基于规则的简单分析"
         )
     
-    def route_query(self, query: str, top_k: int = 5) -> Tuple[List[Document], QueryAnalysis]:
+    def route_query(self, query: str, top_k: int = 5, force_strategy: Optional[Any] = None) -> Tuple[List[Document], QueryAnalysis]:
         """
         智能路由查询到最适合的检索引擎
         """
         logger.info(f"开始智能路由: {query}")
-        
-        # 1. 分析查询特征
-        analysis = self.analyze_query(query)
+
+        # 1. 选择策略（支持强制策略）
+        forced = self._parse_forced_strategy(force_strategy)
+        if forced is None:
+            analysis = self.analyze_query(query)
+        else:
+            analysis = QueryAnalysis(
+                query_complexity=0.0,
+                relationship_intensity=0.0,
+                reasoning_required=(forced != SearchStrategy.HYBRID_TRADITIONAL),
+                entity_count=max(1, len(query.split())),
+                recommended_strategy=forced,
+                confidence=1.0,
+                reasoning="使用force_strategy强制指定策略"
+            )
+            logger.info(f"使用强制检索策略: {forced.value}")
         
         # 2. 更新统计
         self._update_route_stats(analysis.recommended_strategy)
@@ -199,7 +229,11 @@ class IntelligentQueryRouter:
             
         except Exception as e:
             logger.error(f"查询路由失败: {e}")
-            # 降级到传统检索
+            # 评测模式下（强制策略）禁止串路由降级，直接返回空结果
+            if forced is not None:
+                documents = []
+                return documents, analysis
+            # 默认模式下允许降级到传统检索
             documents = self.traditional_retrieval.hybrid_search(query, top_k)
             return documents, analysis
     
