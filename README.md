@@ -27,6 +27,8 @@ CookHelper (山治君) - AI 美食推荐助手
 
 ## 🛠️ 技术栈
 
+![架构图](./view3.png)
+
 **前端:**
 - Next.js 14 (React框架)
 - TypeScript
