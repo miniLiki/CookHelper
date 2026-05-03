@@ -46,12 +46,12 @@ CookHelper (山治君) - AI 美食推荐助手
 - MinIO + etcd（Milvus依赖）
 
 ## 🚀 快速开始
-### 📋 前置要求
+### 📋 前置
 
 - Docker Desktop（必需）
 - Node.js 18+（可选，仅本地前端开发需要）
 
-### 🎯 一键启动
+### 🎯 启动
 
 **Windows 用户（推荐）:**
 ```bash
@@ -73,10 +73,7 @@ cd cookhelper
 chmod +x start.sh stop.sh
 ./start.sh
 ```
-
-
-### 🌐 访问应用
-
+**访问**
 启动完成后，脚本会自动打开浏览器，或手动访问：
 
 - **🏠 应用首页**: http://localhost
@@ -84,9 +81,7 @@ chmod +x start.sh stop.sh
 - **🐍 后端API**: http://localhost:8000
 - **📊 Neo4j**: http://localhost:7474 (neo4j/all-in-rag)
 - **🗄️ Milvus/MinIO 控制台**: http://localhost:9001 (minioadmin/minioadmin)
-
-## 🛑 停止服务
-
+**停止**
 ```bash
 # 停止所有服务
 stop.bat        # Windows
@@ -99,7 +94,7 @@ docker-compose down
 docker-compose down -v
 ```
 
-## 📝 常用命令
+**常用命令**
 
 ```bash
 # 查看所有服务状态
